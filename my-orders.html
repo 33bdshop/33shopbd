@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order History</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { margin:0;font-family:'Inter',sans-serif;background:#f4f7fa; }
+    .header { background:#ff6600;color:#fff;padding:14px 18px;font-size:18px;display:flex;align-items:center; }
+    .back-icon { font-size:24px;margin-right:14px;cursor:pointer; }
+    .main-content { padding:20px; }
+    h1 { font-size:20px;margin-bottom:20px;color:#333; }
+    .order-card { background:#fff;border-radius:10px;padding:14px;margin-bottom:14px;box-shadow:0 3px 6px rgba(0,0,0,0.1); }
+    .order-card p { margin:6px 0;font-size:14px;color:#333; }
+    .empty { text-align:center;margin-top:40px;font-size:15px;color:#777; }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="header">
+    <i class="fa-solid fa-arrow-left back-icon" onclick="history.back()"></i>
+    Order History
+  </div>
+
+  <!-- Content -->
+  <div class="main-content">
+    <h1>📜 আপনার অর্ডারসমূহ</h1>
+    <div id="orders"></div>
+  </div>
+
+  <script>
+    const ordersDiv = document.getElementById("orders");
+    const loggedInUser = localStorage.getItem("loggedInUser"); // লগইন করা ইউজারের ইমেইল
+
+    if(!loggedInUser){
+      ordersDiv.innerHTML = "<p class='empty'>⚠️ আগে লগইন করুন</p>";
+    } else {
+      // প্রতিটি ইউজারের জন্য আলাদা key ব্যবহার করছি
+      const orders = JSON.parse(localStorage.getItem("orders_" + loggedInUser)) || [];
+
+      if(orders.length === 0){
+        ordersDiv.innerHTML = "<p class='empty'>⚠️ কোনো অর্ডার পাওয়া যায়নি</p>";
+      } else {
+        orders.slice().reverse().forEach(order=>{
+          const card = document.createElement("div");
+          card.className = "order-card";
+          card.innerHTML = `
+            <p><b>আইটেম:</b> ${order.package}</p>
+            <p><b>মূল্য:</b> ৳${order.price}</p>
+            <p><b>Player ID:</b> ${order.playerId}</p>
+            <p><b>Transaction:</b> ${order.trxId}</p>
+            <p><b>Wallet:</b> ${order.wallet} (${order.walletNumber})</p>
+            <p><b>তারিখ:</b> ${order.date}</p>
+          `;
+          ordersDiv.appendChild(card);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
